@@ -129,11 +129,45 @@ NAME                                DESIRED   CURRENT   READY   AGE
 replicaset.apps/jaeger-7d4bc949bf   1         1         1       73s
 ```
 
+## Ingress settings on Docker for Mac Kubernetes
+
+- [Set up Ingress on Minikube with the NGINX Ingress Controller](https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/)
+- [NGINX Ingress Controller : Installation Guide](https://kubernetes.github.io/ingress-nginx/deploy/)
+
+run `Make setup-ingress-for-mac` and  
+modify service jaeger-query in jaeger-production-template to type: ClusterIP, but port:80 is not used for ClusterIP
+
+```
+     spec:
+       ports:
+         - name: jaeger-query
+-          port: 80
++          #port: 80
++          port: 8080
+           protocol: TCP
+           targetPort: 16686
+       selector:
+         app.kubernetes.io/name: jaeger
+         app.kubernetes.io/component: query
+-      type: LoadBalancer
++      #type: LoadBalancer
++      type: ClusterIP
+```
+
+then
+
+```
+kubectl apply -f k8s/jaeger-production-template.yml
+kubectl apply -f k8s/ing/local_ing.yml
+kubectl describe ingress hiromaily-ingress
+kubectl get all --namespace=ingress-nginx
+```
+
 ## TODO
 
 - [x] ~~update any container images latest~~
 - [x] ~~modify StatefulSet to use Persistent Volumes~~
-- [ ] create Ingress for jaeger-query
+- [x] ~~create Ingress for jaeger-query~~
 - [ ] DaemonSet should be adjusted to our environment, it should access to collector in different cluster
 - [ ] after cassandra job is done, Jaeger components should be created
 

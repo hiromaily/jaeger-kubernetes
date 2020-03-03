@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: hiromaily-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  # backend:
+  #   serviceName: jaeger-query
+  #   servicePort: 8080
+  rules:
+    - host: hiromaily.com #hosts setting is required in advance on mac
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: jaeger-query
+              servicePort: 8080
