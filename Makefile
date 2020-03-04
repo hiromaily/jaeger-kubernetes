@@ -74,8 +74,8 @@ create-cassandra:
 # For jaeger components
 ###################################################
 # For development for develoment 
-create-dev-deployment:
-	kubectl apply -f k8s/jaeger-all-in-one-template.yml
+#create-dev-deployment:
+#	kubectl apply -f k8s/jaeger-all-in-one-template.yml
 
 # For development for production
 create-prod-deployment:
@@ -86,7 +86,7 @@ create-prod-all: init-resources create-cassandra create-prod-deployment
 
 
 ###################################################
-# For go-tracer apps
+# For go-tracer apps in app cluster
 ###################################################
 create-apps:
 	kubectl apply -f k8s/apps/configmap.yml
@@ -99,10 +99,19 @@ create-apps:
 ###################################################
 # For Ingress Jaeger UI
 ###################################################
+# for single cluster
 create-ingress:
 	kubectl apply -f k8s/ing/local_ing.yml
 	kubectl describe ingress jaeger-ingress
 	# wait until Address is allocated
+
+# for multiple cluster / for jaeger-ui in jaeger cluster
+create-jaeger-ing:
+	kubectl apply -f k8s/ing/jaegerquery_ing.yml
+
+# for multiple cluster / for go-tracer in app cluster
+create-go-tracer-ing:
+	kubectl apply -f k8s/ing/go_tracer_ing.yml
 
 #kubectl get ingress jaeger-ingress -o jsonpath={.status.loadBalancer.ingress}
 #kubectl get ingress jaeger-ingress -o json | jq .status.loadBalancer.ingress
