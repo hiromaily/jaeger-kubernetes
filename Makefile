@@ -3,6 +3,19 @@ get-template:
 	wget https://raw.githubusercontent.com/jaegertracing/jaeger-kubernetes/master/all-in-one/jaeger-all-in-one-template.yml
 	wget https://raw.githubusercontent.com/jaegertracing/jaeger-kubernetes/master/jaeger-production-template.yml
 
+kubernetes-version:
+	kubectl get nodes
+
+###################################################
+# For Kind settings
+###################################################
+kind-settings:
+	brew install kind
+	kind create cluster --name kind-app-cluster
+	kind create cluster --name kind-jaeger-cluster
+	kind get clusters
+	kubectl cluster-info --context kind-app-cluster
+
 ###################################################
 # For Ingress　Controller
 ###################################################
@@ -69,7 +82,7 @@ create-prod-deployment:
 	kubectl apply -f k8s/jaeger-production-template.yml
 
 
-create-prod-all: init-resources　create-cassandra create-prod-deployment 
+create-prod-all: init-resources create-cassandra create-prod-deployment 
 
 
 ###################################################

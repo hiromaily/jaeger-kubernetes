@@ -204,6 +204,10 @@ kubectl describe ingress jaeger-ingress
 kubectl get all --namespace=ingress-nginx
 ```
 
+## Configure cluster by kind
+
+kubernetes version depends on kind version. [releases](https://github.com/kubernetes-sigs/kind/releases)
+
 ## TODO
 
 - [x] ~~update any container images latest~~
