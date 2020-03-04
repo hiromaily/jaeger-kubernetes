@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: hiromaily-ingress
+  name: jaeger-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
@@ -9,10 +9,28 @@ spec:
   #   serviceName: jaeger-query
   #   servicePort: 8080
   rules:
-    - host: hiromaily.com #hosts setting is required in advance on mac
+    # - host: jaeger-ui.com #hosts setting is required in advance on mac
+    #   http:
+    #     paths:
+    #       - path: /jaeger-ui #TODO: root path is required for jaeger-ui
+    #         backend:
+    #           serviceName: jaeger-query
+    #           servicePort: 8080
+    #       - path: /tracer-app #TODO: handler expects `/`, so it can not be used
+    #         backend:
+    #           serviceName: go-tracer
+    #           servicePort: 9090
+    - host: jaeger-ui.com #hosts setting is required in advance on mac
       http:
         paths:
           - path: /
             backend:
               serviceName: jaeger-query
               servicePort: 8080
+    - host: go-tracer.com #hosts setting is required in advance on mac
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: go-tracer
+              servicePort: 9090

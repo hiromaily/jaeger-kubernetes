@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-tracer
+  labels:
+    app: go-tracer
+data:
+  settings: |
+    [server]
+    port = 9000
+
+    [tracer]
+    type = "jaeger" # none, jaeger,
+
+    [tracer.jaeger]
+    service_name = "service-name"
+    collector_endpoint = "http://jaeger-collector:14268/api/traces" # set service name
+    sampling_probability = 1.0  # 0.001 would be fine in production
+
+    [tracer.datadog]
+    service_name = "service-datadog"
+    collector_endpoint = ":8126"
+    sampling_probability = 1.0  # 0.001 would be fine in production

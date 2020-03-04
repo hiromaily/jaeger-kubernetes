@@ -1,6 +1,6 @@
 # jaeger_kubernetes
 
-sample for Jaeger on Kubernetes
+Jaeger configration on Kubernetes
 
 - [Jaeger Getting Started](https://www.jaegertracing.io/docs/1.17/getting-started/)
 - [Jaeger Kubernetes Templates](https://github.com/jaegertracing/jaeger-kubernetes)
@@ -22,18 +22,59 @@ Jaeger, inspired by Dapper and OpenZipkin, is a distributed tracing system relea
 
 ## Get kubernetes template
 
-create deployment for development
+1. create StorageClass
+
+```
+kubectl apply -f k8s/sc/local_sc.yml
+```
+
+2. create PersistentVolume (required if it runs on local)
+
+```
+kubectl apply -f k8s/pv/local_lib_pv.yml
+kubectl apply -f k8s/pv/local_log_pv.yml
+```
+
+3. create PersistentVolumeClaim  
+   should wait until STATUS is Bound
+
+```
+kubectl apply -f k8s/pvc/local_lib_pvc.yml
+kubectl apply -f k8s/pvc/local_log_pvc.yml
+```
+
+4. create StatefulSet, ConfigMap for Cassandra
+
+```
+kubectl apply -f k8s/cassandra/configmap.yml
+kubectl apply -f k8s/cassandra/cassandra.yml
+```
+
+5-1. create Jaeger deployment for development use by all in one model
 
 ```
 kubectl apply -f k8s/jaeger-all-in-one-template.yml
 ```
 
-create deployment for production
+5-2. create Jaeger deployment for production use
 
 ```
 kubectl apply -f k8s/cassandra/configmap.yml
 kubectl apply -f k8s/cassandra/cassandra.yml
 kubectl apply -f k8s/jaeger-production-template.yml
+```
+
+6. create sample apps for storing logs
+
+```
+kubectl apply -f k8s/apps/configmap.yml
+kubectl apply -f k8s/apps/deployment.yml
+```
+
+7. create ingress
+
+```
+kubectl apply -f k8s/ing/local_ing.yml
 ```
 
 ## Manifest
@@ -159,31 +200,28 @@ then
 ```
 kubectl apply -f k8s/jaeger-production-template.yml
 kubectl apply -f k8s/ing/local_ing.yml
-kubectl describe ingress hiromaily-ingress
+kubectl describe ingress jaeger-ingress
 kubectl get all --namespace=ingress-nginx
 ```
 
 ## TODO
 
 - [x] ~~update any container images latest~~
-- [x] ~~modify StatefulSet to use Persistent Volumes~~
-- [x] ~~create Ingress for jaeger-query~~
-- [ ] DaemonSet should be adjusted to our environment, it should access to collector in different cluster
-- [ ] after cassandra job is done, Jaeger components should be created
-
-モニタリングで使っている Jaeger が Kubernetes の Cluster 上で管理されてないので、それの構築作業中
-Jaeger の PodCluster
-複数のプロセスから成り立つの
+- [x] ~~modify StatefulSet to use Persistent Volumes on local~~
+- [x] ~~create Ingress for jaeger-query to access from localhost~
+- [x] ~~create sample apps to store logs(push log to jaeger-collector)
+- [] DaemonSet as jaeger-agent is not used because apps call api to jaeger-collector directly
+- [] adjust configuration for multiple cluster using kind
 
 ## Issues
 
 1. Local Volume は他の Pod から共有で利用することができないため、statefulset が replica:1 でなければ動かない  
    => after running, 2 of 3 pods become CrashLoopBackOff
 
-2. pod has unbound immediate PersistentVolumeClaims  
-   => info would be false
-   https://stackoverflow.com/questions/52668938/pod-has-unbound-persistentvolumeclaims
-
-3. k get pvc  
-   pvc を apply したあとは status を確認したほうがよさげ、pvc の作成には若干時間がかかるかも  
+2. k get pvc  
+   pvc を apply したあとは status を確認したほうがよさげ、pvc の作成には若干時間がかかる  
    \$ kubectl get pvc -o go-template='{{range .items}}{{.status}}{{"\n"}}{{end}}'
+
+3. App から jaeger-collector に接続できない。 App 側に status.hostIP で IP を設定してみたが、これではないようだ  
+   `dial tcp 192.168.65.3:14268: connect: connection refused`  
+   これは、サービス名`jaeger-collector`だけでいいはず。

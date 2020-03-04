@@ -44,8 +44,8 @@ items:
         app.kubernetes.io/part-of: jaeger
     spec:
       serviceName: cassandra
-      replicas: 3 # should replicas be 1 on local??
-      #replicas: 1
+      #replicas: 3 # should replicas be 1 on local??
+      replicas: 1
       template:
         metadata:
           labels:
