@@ -33,7 +33,7 @@ items:
   #--------------------------------------------------------
   # Cassandra StatefulSet cassandra
   #--------------------------------------------------------
-  - apiVersion: 'apps/v1beta1'
+  - apiVersion: 'apps/v1'
     kind: StatefulSet
     metadata:
       name: cassandra
@@ -43,9 +43,14 @@ items:
         app.kubernetes.io/component: storage-backend
         app.kubernetes.io/part-of: jaeger
     spec:
+      selector:
+        matchLabels:
+          app: cassandra
+          app.kubernetes.io/name: cassandra
+          app.kubernetes.io/component: storage-backend
+          app.kubernetes.io/part-of: jaeger
       serviceName: cassandra
-      #replicas: 3 # should replicas be 1 on local??
-      replicas: 1
+      replicas: 1 # only 1 is allowed on local storage
       template:
         metadata:
           labels:
@@ -104,11 +109,9 @@ items:
             - name: cassandra-data
               persistentVolumeClaim:
                 claimName: local-lib-pvc
-              #emptyDir: {}
             - name: cassandra-logs
               persistentVolumeClaim:
                 claimName: local-log-pvc
-              #emptyDir: {}
   #--------------------------------------------------------
   # Cassandra Job jaeger-cassandra-schema-job
   #--------------------------------------------------------
