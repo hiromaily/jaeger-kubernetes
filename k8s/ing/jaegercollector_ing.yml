@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: jaeger-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: jaeger-collector.com #hosts setting is required in advance on mac
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: jaeger-collector
+              servicePort: 14268
