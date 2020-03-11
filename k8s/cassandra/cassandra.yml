@@ -100,6 +100,7 @@ items:
                   value: 'GossipingPropertyFileSnitch'
                 - name: CASSANDRA_SEEDS
                   value: cassandra-0.cassandra
+                  #[name of StatefulSet]-[index(from 0)].[serviceName here].[namespace(default)].svc.cluster.local
               volumeMounts:
                 - name: cassandra-data
                   mountPath: /var/lib/cassandra
