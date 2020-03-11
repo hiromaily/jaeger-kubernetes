@@ -140,4 +140,7 @@ items:
                   value: 'prod'
                 - name: DATACENTER
                   value: 'dc1'
+                # - name: CQLSH_HOST
+                #   value: 'service-name' # Set service name in Service, default host is cassandra
+                #   # This is used for command `cqlsh with host`
           restartPolicy: OnFailure
