@@ -47,21 +47,21 @@ items:
                   path: '/'
                   port: 14269
               volumeMounts:
-                - name: jaeger-configuration-volume
+                - name: jaeger-configuration-volume # just volume name
                   mountPath: /conf
               env:
                 - name: SPAN_STORAGE_TYPE
                   valueFrom:
                     configMapKeyRef:
-                      name: jaeger-configuration
-                      key: span-storage-type
+                      name: jaeger-configuration # name of ConfigMap
+                      key: span-storage-type     # key of ConfigMap
           volumes:
             - configMap:
-                name: jaeger-configuration
+                name: jaeger-configuration # name of ConfigMap
                 items:
                   - key: collector
                     path: collector.yaml
-              name: jaeger-configuration-volume
+              name: jaeger-configuration-volume # use volume name of which used at volumeMoutes
   #--------------------------------------------------------
   # Service jaeger-collector
   #--------------------------------------------------------
@@ -160,8 +160,8 @@ items:
                 - name: SPAN_STORAGE_TYPE
                   valueFrom:
                     configMapKeyRef:
-                      name: jaeger-configuration
-                      key: span-storage-type
+                      name: jaeger-configuration # name of ConfigMap
+                      key: span-storage-type     # key of ConfigMap
           volumes:
             - configMap:
                 name: jaeger-configuration
